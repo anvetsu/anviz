@@ -28,7 +28,7 @@ def julia_set(width, height, zoom=1, niter=256):
             for i in range(niter):
                 radius_sqr = zx*zx + zy*zy
                 # Iterate till the point is outside
-                # the circle with radius 4.             
+                # the circle with radius 2.             
                 if radius_sqr > 4: break
                 # Calculate new positions
                 zy,zx = 2.0*zx*zy + c_imag, zx*zx - zy*zy + c_real
