@@ -1,3 +1,10 @@
+"""
+julia.py - Implement the Julia set in Python using matplotlib & numpy
+
+Ref: http://localhost:1313/posts/fractals_with_python1/
+
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 
