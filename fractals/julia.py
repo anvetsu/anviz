@@ -9,14 +9,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def julia_set(width, height, zoom=1, niter=256):
-    """ A julia set of geometry (wxh) and iterations 'niter' """
+    """ A julia set of geometry (width x height) and iterations 'niter' """
 
     w,h = width, height
     pixels = np.arange(w*h, dtype=np.uint16).reshape(h, w)
 
     # Pick some defaults for the real and imaginary constants
     # This determines the shape of the Julia set.
-    c_real, c_imag = -0.7, 0.27
+    c_real, c_imag = 0.4, -0.2
     
     for x in range(w): 
         for y in range(h):
