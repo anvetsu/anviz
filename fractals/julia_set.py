@@ -3,6 +3,8 @@ Julia set using Python, matplotlib and Python
 
 Serial and Parallel versions
 
+# Reimplemented to use complex numbers
+
 """
 
 import matplotlib.pyplot as plt
@@ -10,7 +12,7 @@ import numpy as np
 import multiprocessing as mp
 import functools
 
-def julia_set_calc_row(y, w, h, c_real, c_imag, niter=256, zoom=1,):
+def julia_set_calc_row(y, w, h, c, niter=256, zoom=1,):
     """ Calculate one row of the julia set with size wxh """
 
     # image_rows = {}
@@ -21,23 +23,22 @@ def julia_set_calc_row(y, w, h, c_real, c_imag, niter=256, zoom=1,):
         # based on the pixel location and zoom and position values
         zx = 1.5*(x - w/2)/(0.5*zoom*w) 
         zy = 1.0*(y - h/2)/(0.5*zoom*h)
-
+        z = complex(zx, zy)
+        
         for i in range(niter):
-            radius_sqr = zx*zx + zy*zy
+            radius_sqr = abs(z)
             # Iterate till the point is outside
             # the circle with radius 2.             
             if radius_sqr > 4: break
             # Calculate new positions
-            zy,zx = 2.0*zx*zy + c_imag, zx*zx - zy*zy + c_real
+            z = z**2 + c
 
             color = (i >> 21) + (i >> 10)  + i * 8
             row_pixels[x] = color
-            # image_rows[y*w + x] = color
 
-    # return image_rows
     return y,row_pixels
 
-def julia_set_calc_column(x, w, h, c_real, c_imag, niter = 256, zoom=1,):
+def julia_set_calc_column(x, w, h, c, niter = 256, zoom=1,):
     """ Calculate one column of the julia set with size wxh """
 
     col_pixels = np.arange(h)
@@ -47,14 +48,15 @@ def julia_set_calc_column(x, w, h, c_real, c_imag, niter = 256, zoom=1,):
         # based on the pixel location and zoom and position values
         zx = 1.5*(x - w/2)/(0.5*zoom*w) 
         zy = 1.0*(y - h/2)/(0.5*zoom*h)
-
+        z = complex(zx, zy)
+        
         for i in range(niter):
-            radius_sqr = zx*zx + zy*zy
+            radius_sqr = abs(z)
             # Iterate till the point is outside
             # the circle with radius 2.             
             if radius_sqr > 4: break
             # Calculate new positions
-            zy,zx = 2.0*zx*zy + c_imag, zx*zx - zy*zy + c_real
+            z = z**2 + c
 
             color = (i >> 21) + (i >> 10)  + i * 8
             col_pixels[y] = color
@@ -69,14 +71,14 @@ def julia_set_mp(width, height, cx=-0.7, cy=0.27, zoom=1, niter=256):
 
     # Pick some defaults for the real and imaginary constants
     # This determines the shape of the Julia set.
-    c_real, c_imag = cx, cy
+    c = complex(cx, cy)
 
     # print('Starting calculation using',width, height,cx,cy)
     pool = mp.Pool(mp.cpu_count())
 
     julia_partial = functools.partial(julia_set_calc_row, 
                                       w=w,h=h,
-                                      c_real=c_real, c_imag=c_imag,
+                                      c = c,
                                       niter=niter,zoom=zoom)
 
     for y,row_pixel in pool.map(julia_partial, range(h)):
@@ -101,7 +103,7 @@ def julia_set(width, height, cx=-0.7, cy=0.27, zoom=1, niter=256):
 
     # Pick some defaults for the real and imaginary constants
     # This determines the shape of the Julia set.
-    c_real, c_imag = cx, cy
+    c = complex(cx, cy)
 
     #print('Starting calculation using',width, height,cx,cy)
     
@@ -111,14 +113,15 @@ def julia_set(width, height, cx=-0.7, cy=0.27, zoom=1, niter=256):
             # based on the pixel location and zoom and position values
             zx = 1.5*(x - w/2)/(0.5*zoom*w) 
             zy = 1.0*(y - h/2)/(0.5*zoom*h)
-
+            z = complex(zx, zy)
+            
             for i in range(niter):
-                radius_sqr = zx*zx + zy*zy
+                radius_sqr = abs(z)
                 # Iterate till the point is outside
                 # the circle with radius 2.             
                 if radius_sqr > 4: break
                 # Calculate new positions
-                zy,zx = 2.0*zx*zy + c_imag, zx*zx - zy*zy + c_real
+                z = z**2 + c
 
             color = (i >> 21) + (i >> 10)  + i * 8
             pixels[y,x] = color
@@ -130,7 +133,7 @@ def julia_set(width, height, cx=-0.7, cy=0.27, zoom=1, niter=256):
 def display(width=2048, height=1536):
     """ Display a julia set of width `width` and height `height` """
 
-    pixels = julia_set_mp(width, height)
+    pixels = julia_set(width, height)
     # to display the created fractal 
     plt.imshow(pixels)
     plt.show()
