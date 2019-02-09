@@ -15,14 +15,13 @@ import functools
 def julia_set_calc_row(y, w, h, c, niter=256, zoom=1,):
     """ Calculate one row of the julia set with size wxh """
 
-    # image_rows = {}
-    row_pixels = np.arange(w)
+    row_pixels = np.arange(w, dtype=np.uint16)
+    zy = 1.0*(y - h/2)/(0.5*zoom*h)
         
     for x in range(w): 
         # calculate the initial real and imaginary part of z,
         # based on the pixel location and zoom and position values
         zx = 1.5*(x - w/2)/(0.5*zoom*w) 
-        zy = 1.0*(y - h/2)/(0.5*zoom*h)
         z = complex(zx, zy)
         
         for i in range(niter):
@@ -33,15 +32,15 @@ def julia_set_calc_row(y, w, h, c, niter=256, zoom=1,):
             # Calculate new positions
             z = z**2 + c
 
-            color = (i >> 21) + (i >> 10)  + i * 8
-            row_pixels[x] = color
+        color = (i >> 21) + (i >> 10)  + i * 8
+        row_pixels[x] = color
 
     return y,row_pixels
 
-def julia_set_calc_column(x, w, h, c, niter = 256, zoom=1,):
+def julia_set_calc_column(x, w, h, c, niter = 256, zoom=1):
     """ Calculate one column of the julia set with size wxh """
 
-    col_pixels = np.arange(h)
+    col_pixels = np.arange(h, dtype=np.uint16)
         
     for y in range(h): 
         # calculate the initial real and imaginary part of z,
@@ -58,8 +57,8 @@ def julia_set_calc_column(x, w, h, c, niter = 256, zoom=1,):
             # Calculate new positions
             z = z**2 + c
 
-            color = (i >> 21) + (i >> 10)  + i * 8
-            col_pixels[y] = color
+        color = (i >> 21) + (i >> 10)  + i * 8
+        col_pixels[y] = color
 
     return x,col_pixels
 
@@ -133,10 +132,11 @@ def julia_set(width, height, cx=-0.7, cy=0.27, zoom=1, niter=256):
 def display(width=2048, height=1536):
     """ Display a julia set of width `width` and height `height` """
 
-    pixels = julia_set(width, height)
+    pixels = julia_set_mp(width, height)
     # to display the created fractal 
     plt.imshow(pixels)
     plt.show()
+
     
 if __name__ == "__main__":
     display()
