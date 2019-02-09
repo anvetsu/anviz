@@ -44,7 +44,7 @@ def mandelbrot_set(width, height, zoom=1, x_off=0, y_off=0, niter=256):
     return pixels
 
 def display(width=1024, height=768, zoom=1.0, x_off=0, y_off=0, cmap='viridis'):
-    """ Display a julia set of width `width` and height `height` and zoom `zoom`
+    """ Display a mandelbrot set of width `width` and height `height` and zoom `zoom`
     and offsets (x_off, y_off) """
 
     pixels = mandelbrot_set(width, height, zoom=zoom, x_off=x_off, y_off=y_off)
