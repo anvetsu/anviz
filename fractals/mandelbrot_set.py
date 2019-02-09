@@ -32,7 +32,7 @@ def mandelbrot_set_calc_column(x, w, h, x_off=0, y_off=0, zoom=1, niter=256):
             # Calculate new positions
             c = c**2 + z
 
-        col_pixels[y] = (i<<21) + (i<<10) + i*8
+        col_pixels[y] = (i<<4) + (i<<12) + i*2
 
     return x,col_pixels
 
@@ -85,12 +85,12 @@ def mandelbrot_set(width, height, zoom=1, x_off=0, y_off=0, niter=256):
                 # Calculate new positions
                 c = c**2 + z
 
-            pixels[y,x] = (i<<21) + (i<<10) + i*8
+            pixels[y,x] = (i<<12) + (i<<8) + i*2
   
     return pixels
 
 def display(width=1024, height=768, zoom=1.0, x_off=0, y_off=0, cmap='viridis'):
-    """ Display a julia set of width `width` and height `height` and zoom `zoom`
+    """ Display a mandelbrot set of width `width` and height `height` and zoom `zoom`
     and offsets (x_off, y_off) """
 
     pixels = mandelbrot_set_mp(width, height, zoom=zoom, x_off=x_off, y_off=y_off)
