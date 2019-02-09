@@ -1,5 +1,5 @@
 """
-Julia set using Python, matplotlib and Python
+Julia set using Python, matplotlib and numpy
 
 Serial and Parallel versions
 
