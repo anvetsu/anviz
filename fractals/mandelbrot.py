@@ -8,6 +8,7 @@ by reusing code from the Julia set.
 import matplotlib.pyplot as plt
 import numpy as np
 
+             
 def mandelbrot_set(width, height, zoom=1, x_off=0, y_off=0, niter=256):
     """ A mandelbrot set of geometry (width x height) and iterations 'niter' """
 
@@ -18,8 +19,8 @@ def mandelbrot_set(width, height, zoom=1, x_off=0, y_off=0, niter=256):
     # the Julia set is connected or every julia set that contains
     # the origin (0, 0). Hence we always start with c at the origin
 
-    for x in range(w): 
-        for y in range(h):
+    for y in range(h): 
+        for x in range(w):
             # calculate the initial real and imaginary part of z,
             # based on the pixel location and zoom and position values
             # We use (x-3*w/4) instead of (x-w/2) to fully visualize the fractal
@@ -38,8 +39,7 @@ def mandelbrot_set(width, height, zoom=1, x_off=0, y_off=0, niter=256):
                 # Calculate new positions
                 c = c**2 + z
 
-            color = (i << 21) + (i << 10) + i*8
-            pixels[y,x] = color
+            pixels[y,x] = (i<<21) + (i<<10) + i*8
   
     return pixels
 
