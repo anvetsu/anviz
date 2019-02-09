@@ -66,7 +66,7 @@ def julia_set_mp(width, height, cx=-0.7, cy=0.27, zoom=1, niter=256):
     """ Julia set function - using multiprocessing """
 
     w,h = width, height
-    pixels = np.arange(w*h, dtype=np.uint32).reshape(h, w)
+    pixels = np.arange(w*h, dtype=np.uint16).reshape(h, w)
 
     # Pick some defaults for the real and imaginary constants
     # This determines the shape of the Julia set.
