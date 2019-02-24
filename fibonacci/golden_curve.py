@@ -90,7 +90,7 @@ def golden_curve(max_n=10):
         if i == 0: continue
         
         if i  % 8 == 0:
-            p += 2
+            p += 1
             continue
 
         if len(arc_points) == 8: continue
@@ -128,4 +128,4 @@ def golden_curve(max_n=10):
     plt.show()
 
 if __name__ == "__main__":
-    golden_curve(max_n=20)
+    golden_curve(max_n=10)
