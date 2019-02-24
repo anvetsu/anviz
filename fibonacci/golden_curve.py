@@ -95,8 +95,13 @@ def golden_curve(max_n=10):
                   [r1.get_x()+r1.get_width(), r1.get_y()+r1.get_height()],
                   [r1.get_x(), r1.get_y()+r1.get_height()]]
 
-        if i % 8 == 0 or i % 9 == 0:
-            continue
+        flag = 1
+        for j in range(8, 11):
+            flag = i % j
+            if flag == 0:
+                break
+
+        if flag == 0: continue
 
         # Successive arcs are centered on the points of rectangles
         # which is calculated as the p % 4 the item
@@ -111,13 +116,13 @@ def golden_curve(max_n=10):
             
     for center, radius, angle in arc_points:
         print('Plotting arc at center',center,'radius',radius, 'angle',angle)
-        arc = Arc(center, radius*2, radius*2, angle=angle,
-                  theta1=0, theta2=90.0, edgecolor='black',facecolor='b',
-                  antialiased=True)
+        arc = Arc(center, radius*2, radius*2, angle=angle, snap=True,
+                  theta1=0, theta2=90.0, edgecolor='g',facecolor='g',
+                  antialiased=True, linestyle='-', joinstyle='bevel')
         ax.add_patch(arc)
         
-    rect_pcs = PatchCollection(rects, facecolor='g', alpha=0.4,
-                              edgecolor='black')
+    rect_pcs = PatchCollection(rects, facecolor='yellow', alpha=0.4, edgecolor='black')
+
 
     # rect_pcs = PatchCollection(rects, facecolor='beige')    
     ax.add_collection(rect_pcs)
@@ -125,4 +130,4 @@ def golden_curve(max_n=10):
     plt.show()
 
 if __name__ == "__main__":
-    golden_curve()
+    golden_curve(max_n=20)
