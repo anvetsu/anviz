@@ -51,8 +51,8 @@ def golden_rectangles(max_n=10):
     # Make the plot size large enough to hold
     # the largest fibonacci number on both
     # x and y-axis.
-    plt.xticks(range(1, last_x + 10))
-    plt.yticks(range(1, last_y + 10))
+    ax.set_xlim(0, last_x + 10)
+    ax.set_ylim(0, last_y + 10) 
     # Turn off the axes
     plt.axis('off')
 
