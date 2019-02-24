@@ -49,13 +49,12 @@ def golden_curve(max_n=10):
     # Make the plot size large enough to hold
     # the largest fibonacci number on both
     # x and y-axis.
-    plt.xticks(range(1, last_x + 10))
-    plt.yticks(range(1, last_y + 10))
+    ax.set_xlim(0, last_x + 10)
+    ax.set_ylim(0, last_y + 10)
     plt.axis('off')
 
     origin = [0, 0]
     p = 0
-
     # Data for plotting arcs
     arc_points = []
     rects = []
@@ -68,7 +67,7 @@ def golden_curve(max_n=10):
 
         # Current arc's radius
         arc_radius = cur_fn
-
+            
         if i in fourth_series(max_n):
             # Every 4th rectangle from the 2nd
             # rectangle onwards has its origin-x
@@ -88,23 +87,24 @@ def golden_curve(max_n=10):
 
         rectangle = Rectangle(origin, prev_fn, cur_fn, angle=0.0, antialiased=True)
         rects.append(rectangle)
+        if i == 0: continue
+        
+        if i  % 8 == 0:
+            p += 1
+            continue
 
+        if len(arc_points) == 8: continue
+        
         r1 = rectangle
         # Calculate the rectangle's co-ordinates
         coords = [r1.get_xy(), [r1.get_x()+r1.get_width(), r1.get_y()],
                   [r1.get_x()+r1.get_width(), r1.get_y()+r1.get_height()],
                   [r1.get_x(), r1.get_y()+r1.get_height()]]
 
-        flag = 1
-        for j in range(8, 11):
-            flag = i % j
-            if flag == 0:
-                break
-
-        if flag == 0: continue
-
+        print(coords)
         # Successive arcs are centered on the points of rectangles
         # which is calculated as the p % 4 the item
+        # Draw upto 7 arcs
         arc_points.append((coords[p % 4], arc_radius, angle))
         # Every turn of the spiral we go clockwise by 90 degrees
         # means the starting angle reduces by 90.
@@ -117,17 +117,15 @@ def golden_curve(max_n=10):
     for center, radius, angle in arc_points:
         print('Plotting arc at center',center,'radius',radius, 'angle',angle)
         arc = Arc(center, radius*2, radius*2, angle=angle, snap=True,
-                  theta1=0, theta2=90.0, edgecolor='g',facecolor='g',
-                  antialiased=True, linestyle='-', joinstyle='bevel')
+                  theta1=0, theta2=90.0, edgecolor='black',
+                  antialiased=True)
         ax.add_patch(arc)
         
-    rect_pcs = PatchCollection(rects, facecolor='yellow', alpha=0.4, edgecolor='black')
-
-
+    rect_pcs = PatchCollection(rects, facecolor='g', alpha=0.4, edgecolor='black')
     # rect_pcs = PatchCollection(rects, facecolor='beige')    
     ax.add_collection(rect_pcs)
     
     plt.show()
 
 if __name__ == "__main__":
-    golden_curve(max_n=20)
+    golden_curve(max_n=10)
