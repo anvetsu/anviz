@@ -35,6 +35,12 @@ def f8(z):
 def sin(z):
     return math.sin(abs(z))
 
+def cos(z):
+    return math.cos(abs(z))
+
+def circle(z):
+    return math.sin(abs(z))**2 + math.cos(abs(z))**2
+
 def tan(z):
     return math.tan(abs(z))
 
@@ -47,33 +53,38 @@ def fcube2(z):
 def fsquare(z):
     return z**2 - 1
 
+def fquad(z):
+    return z**4 - 1
+
 def fsix(z):
     return z**6  + z**3 - 1
 
 def fcomplex(z):
-    return z**(4+3j) - 1
+    return z**(0.5+0.3j) - 1
 
 def ftrig1(z):
     return math.cos(abs(z)) - math.sin(abs(z))
 
-def newton_set_calc_row(y, width, height, function, niter=256, zoom=1):
-    """ Calculate one row of the julia set with size wxh """
+
+def newton_set_calc_row(y, width, height, function, niter=256, x_off=0, y_off=0, zoom=1):
+    """ Calculate one row of the newton set with size width x height """
 
     row_pixels = np.arange(width, dtype=np.uint32)
     # drawing area
-    xa, xb, ya, yb = -2.0, 2.0, -2.0, 2.0
+    xa, xb, ya, yb = -2.5, 2.5, -2.5, 2.5
 
-    zy = y * (yb - ya) / (zoom*(height - 1)) + ya   
+    zy = (y + y_off) * (yb - ya) / (zoom*(height - 1)) + ya   
     
     h = 1e-7 # step size for numerical derivative
-    eps = 1e-7 # max error allowed
+    eps = 1e-3 # max error allowed
     a = complex(1, 0)
-    
+
     for x in range(width): 
         # calculate the initial real and imaginary part of z,
         # based on the pixel location and zoom and position values
-            zx = x * (xb - xa) / (zoom*(width - 1)) + xa
+            zx = (x + x_off) * (xb - xa) / (zoom*(width - 1)) + xa
             z = complex(zx, zy)
+            count = 0
             
             for i in range(niter):
                 # complex numerical derivative
@@ -81,87 +92,77 @@ def newton_set_calc_row(y, width, height, function, niter=256, zoom=1):
                 if dz == 0:
                     break
 
+                count += 1
+                if count > 255:
+                    break
                 z0 = z - a*function(z) / dz # Newton iteration
                 if abs(z0 - z) < eps: # stop when close enough to any root
                     break
                 
                 z = z0
 
-            rgb = (i % 32 * 32, i % 16 * 16, i % 32 * 8)
+            # Color according to iteration count 
+            rgb = (i % 16 * 32, i % 8 * 64, i % 4 * 64)                              
             row_pixels[x] = rgb2int(rgb)
 
 
     return y,row_pixels
 
 # draw the fractal
-def newton_set(width, height, function, zoom=1, niter=256):
+def newton_set(width, height, zoom=1, x_off=0, y_off=0, niter=256):
     """ Fractals using newton-raphson """
     
     # drawing area
-    xa, xb, ya, yb = -2.0, 2.0, -2.0, 2.0
-    # Image object
-    pimg = Image.new("RGB", (width, height))
+    xa, xb, ya, yb = -2.5, 2.5, -2.5, 2.5
+    # Pixels array
     pixels = np.arange(width*height*3, dtype=np.uint32).reshape(height, width, 3)
     
-    h = 1e-6 # step size for numerical derivative
-    eps = 1e-5 # max error allowed
-    a = complex(1, 1)
-    
+    h = 1e-7 # step size for numerical derivative
+    eps = 1e-3 # max error allowed
+
+    # Bounding roots
+    r1 = 1
+    r2 = complex(-0.5, math.sin(2*math.pi/3))
+    r3 = complex(-0.5, -1*math.sin(2*math.pi/3))
+
+    # Color multiplication factor
+    multcol = 5
+        
     for y in range(height):
-        zy = y * (yb - ya) / (zoom*(height - 1)) + ya
+        zy = (y + y_off) * (yb - ya)/ (zoom*(height - 1)) + ya 
 
         for x in range(width):
-            zx = x * (xb - xa) / (zoom*(width - 1)) + xa
+            zx = (x + x_off) * (xb - xa)/ (zoom*(width - 1)) + xa 
             z = complex(zx, zy)
-            flag  = True # False
+            count = 0
             
             for i in range(niter):
                 # complex numerical derivative
-                dz = (function(z + complex(h, h)) - function(z)) / complex(h, h)
+                dz = (fcube(z + complex(h, h)) - fcube(z)) / complex(h, h)
                 if dz == 0:
                     break
 
-                z0 = z - a*function(z) / dz # Newton iteration
+                count += 1
+                if count > 255:
+                    break
+                
+                z0 = z - fcube(z) / dz # Newton iteration
                 if abs(z0 - z) < eps: # stop when close enough to any root
-                    flag = True
                     break
                 
                 z = z0
 
-            # schemes
-            # 1. nice bluish tinge
-            # rgb = (n % 8 * 4, n % 16 * 8, n % 32 * 16)
-            # 2. reddish green
-            # rgb = (n % 8 * 32, n % 16 * 16, n % 32 * 8)
-            # 3. very dark red and green
-            # rgb = (n % 8 * 32, n % 16 * 8, n % 32 * 2)
-            # 4. blue fractal, green red curves
-            # rgb = (n % 4 * 64, n % 8 * 32, n % 16 * 16)
-            # 5. reddish pink fractal with blue curves
-            # rgb = (n % 64 * 16, n % 16 * 8, n % 8 * 32)
-            # 6. Greenish n red fractals, blue in between
-            # rgb = (n % 32 * 4, n % 16 * 8, n % 4 * 16)
-            # 7. Blue n pink
-            # rgb = (n % 8 * 32, n % 16 * 16, n % 64 * 32)
-            # 8. Bluish black
-            # rgb = (n % 8 * 8, n % 8 * 16, n % 16 * 32)
-            # 9. Black n white
-            # rgb = (n % 8 * 32, n % 8 * 32, n % 16 * 32)
-            # 10. Mix of colors evenly
-            # rgb = (n % 8 * 64, n % 8 * 32, n % 16 * 32)
-            # 11. Very greenish red
-            # rgb = (n % 32 * 64, n % 8 * 32, n % 8 * 16)
-            
-            # rgb = (n % 4 * 64, n % 8 * 32, n % 16 * 16)
-            rgb = (i % 8 * 64, i % 8 * 32, i % 16 * 32)
-            
-            pimg.putpixel((x,y), rgb)
-            pixels[y,x] = rgb
-            # return pimg
+            # Pixels colored using the roots
+            if abs(z-r1)<eps:
+                pixels[y,x] = (255 - count*multcol, 0, 0)
+            elif abs(z-r2)<=eps:
+                pixels[y,x] = (0, 255 - count*multcol, 0)
+            elif abs(z-r3)<=eps:
+                pixels[y,x] = (0, 0, 255 - count*multcol)
         
     return pixels
 
-def newton_set_mp(width, height, function, zoom=1, niter=256):
+def newton_set_mp(width, height, function, zoom=1, x_off=0, y_off=0, niter=256):
     """ Newton-raphson fractal set with multiprocessing """
     
     w,h = width, height
@@ -172,7 +173,7 @@ def newton_set_mp(width, height, function, zoom=1, niter=256):
 
     newton_partial = functools.partial(newton_set_calc_row, 
                                       width=width,height=height, function=function,
-                                      niter=niter,zoom=zoom)
+                                      niter=niter,zoom=zoom,x_off=x_off,y_off=y_off)
 
     for y,row_pixel in pool.map(newton_partial, range(h)):
         for x in range(w):
@@ -180,13 +181,32 @@ def newton_set_mp(width, height, function, zoom=1, niter=256):
 
     return pixels
         
-def display(width=1024, height=1024, niter=120, zoom=1, cmap='viridis'):
+def display(function, width=1024, height=1024, niter=1024, zoom=1, x_off=0, y_off=0,cmap='viridis'):
     """ Display a newton-raphson fractal """
 
-    pimg = newton_set_mp(width, height, fcube, zoom=zoom, niter=niter)
+    # pimg = newton_set(width, height, zoom=zoom, x_off=x_off, y_off=y_off, niter=niter)
+    pimg = newton_set_mp(width, height, function, zoom=zoom,x_off=x_off, y_off=y_off, niter=niter) 
     plt.axis('off') 
     plt.imshow(pimg, cmap=cmap) 
     plt.show()
 
+def fsqr(z):
+    return z**2 - 1
+
+def fquad(z):
+    return z**4 - 1
+
+def fsix(z):
+    return z**6  + z**3 - 1
+
+def f8(z):
+    return z**8 + 15*z**4 - 16
+
+def fe(z):
+    return math.e**z
+
+def flog(z):
+    return math.log(abs(z))
+
 if __name__ == "__main__":
-    display(cmap='magma')
+    display(f8, cmap='plasma')
