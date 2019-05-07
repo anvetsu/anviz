@@ -84,16 +84,11 @@ def newton_set_calc_row(y, width, height, function, niter=256, x_off=0, y_off=0,
         # based on the pixel location and zoom and position values
         zx = (x + x_off) * (xb - xa) / (zoom*(width - 1)) + xa
         z = complex(zx, zy)
-        count = 0
         
         for i in range(niter):
             # complex numerical derivative
             dz = (function(z + complex(h, h)) - function(z)) / complex(h, h)
             if dz == 0:
-                break
-
-            count += 1
-            if count > 255:
                 break
 
             znext = z - a*function(z) / dz # Newton iteration
