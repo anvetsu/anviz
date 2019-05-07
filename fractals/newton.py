@@ -82,28 +82,29 @@ def newton_set_calc_row(y, width, height, function, niter=256, x_off=0, y_off=0,
     for x in range(width): 
         # calculate the initial real and imaginary part of z,
         # based on the pixel location and zoom and position values
-            zx = (x + x_off) * (xb - xa) / (zoom*(width - 1)) + xa
-            z = complex(zx, zy)
-            count = 0
-            
-            for i in range(niter):
-                # complex numerical derivative
-                dz = (function(z + complex(h, h)) - function(z)) / complex(h, h)
-                if dz == 0:
-                    break
+        zx = (x + x_off) * (xb - xa) / (zoom*(width - 1)) + xa
+        z = complex(zx, zy)
+        count = 0
+        
+        for i in range(niter):
+            # complex numerical derivative
+            dz = (function(z + complex(h, h)) - function(z)) / complex(h, h)
+            if dz == 0:
+                break
 
-                count += 1
-                if count > 255:
-                    break
-                z0 = z - a*function(z) / dz # Newton iteration
-                if abs(z0 - z) < eps: # stop when close enough to any root
-                    break
+            count += 1
+            if count > 255:
+                break
+
+            znext = z - a*function(z) / dz # Newton iteration
+            if abs(znext - z) < eps: # stop when close enough to any root
+                break
                 
-                z = z0
+            z = znext
 
-            # Color according to iteration count 
-            rgb = (i % 16 * 32, i % 8 * 64, i % 4 * 64)                              
-            row_pixels[x] = rgb2int(rgb)
+        # Color according to iteration count 
+        rgb = (i % 16 * 32, i % 8 * 64, i % 4 * 64)                              
+        row_pixels[x] = rgb2int(rgb)
 
 
     return y,row_pixels
@@ -146,11 +147,11 @@ def newton_set(width, height, zoom=1, x_off=0, y_off=0, niter=256):
                 if count > 255:
                     break
                 
-                z0 = z - fcube(z) / dz # Newton iteration
-                if abs(z0 - z) < eps: # stop when close enough to any root
+                znext = z - fcube(z) / dz # Newton iteration
+                if abs(znext - z) < eps: # stop when close enough to any root
                     break
                 
-                z = z0
+                z = znext
 
             # Pixels colored using the roots
             if abs(z-r1)<eps:
