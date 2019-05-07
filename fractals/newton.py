@@ -181,13 +181,13 @@ def newton_set_mp(width, height, function, zoom=1, x_off=0, y_off=0, niter=256):
 
     return pixels
         
-def display(function, width=1024, height=1024, niter=1024, zoom=1, x_off=0, y_off=0,cmap='viridis'):
+def display(function, width=1024, height=1024, niter=1024, zoom=1, x_off=0, y_off=0):
     """ Display a newton-raphson fractal """
 
     # pimg = newton_set(width, height, zoom=zoom, x_off=x_off, y_off=y_off, niter=niter)
     pimg = newton_set_mp(width, height, function, zoom=zoom,x_off=x_off, y_off=y_off, niter=niter) 
     plt.axis('off') 
-    plt.imshow(pimg, cmap=cmap) 
+    plt.imshow(pimg)
     plt.show()
 
 def fsqr(z):
@@ -209,4 +209,4 @@ def flog(z):
     return math.log(abs(z))
 
 if __name__ == "__main__":
-    display(f8, cmap='plasma')
+    display(f8)
