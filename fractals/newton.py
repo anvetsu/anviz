@@ -10,8 +10,6 @@ import math
 import functools
 import multiprocessing as mp
 
-from PIL import Image
-
 def rgb2int(rgb):
     red = rgb[0]
     green = rgb[1]
@@ -30,7 +28,7 @@ def fcube(z):
     return z ** 3 - 1
 
 def f8(z):
-    return z**8 + 15*z**4 - 16
+    return z**8 - 16
 
 def sin(z):
     return math.sin(abs(z))
@@ -196,7 +194,7 @@ def fsix(z):
     return z**6  + z**3 - 1
 
 def f8(z):
-    return z**8 + 15*z**4 - 16
+    return z**8  - 16
 
 def fe(z):
     return math.e**z
